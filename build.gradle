@@ -1,0 +1,39 @@
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_17
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+dependencies {
+    compileOnly 'net.portswigger.burp.extender:burp-extender-api:2.3'
+    implementation 'com.github.CoreyD97:BurpExtenderUtilities:c03c1a2a1'
+    compileOnly 'com.formdev:flatlaf:3.0'
+    testRuntimeOnly files('/home/corey/BurpSuitePro/burpsuite_pro.jar')
+}
+
+jar{
+    archivesBaseName = project.name
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from {
+        (configurations.runtimeClasspath).collect { it.isDirectory() ? it : zipTree(it) }
+    }{
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+        exclude "META-INF/*.txt"
+    }
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+tasks.withType(Jar) {
+    destinationDir = file("$rootDir/releases")
+}
